@@ -1,16 +1,27 @@
 package com.company;
 
-public class Book {
+import java.io.Serializable;
+
+public class Book implements Serializable {
 
     private String title;
     private String author;
-    private boolean available;
+    private boolean available = true;
     private User currentReader;
 
-    public Book(String title, String author, boolean available){
+    public Book(String title, String author){
         this.title = title;
         this.author = author;
-        this.available = available;
+    }
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", available=" + available +
+                ", currentReader=" + currentReader +
+                '}';
     }
 
     public User getCurrentReader(){

@@ -4,7 +4,6 @@ A Modest Proposal by Jonathan Swift
 Little Women by Louisa May Alcott
 The Works of Edgar Allan Poe, The Raven Edition by Edgar Allan Poe
 A Christmas Carol in Prose; Being a Ghost Story of Christmas by Charles Dickens
-Beowulf: An Anglo-Saxon Epic Poem
 A Tale of Two Cities by Charles Dickens
 Et dukkehjem. English by Henrik Ibsen
 The Memoirs, Correspondence, And Miscellanies, From The Papers Of Thomas Jefferson by Jefferson
@@ -43,7 +42,6 @@ Anne of Green Gables by L. M. Montgomery
 The Republic by Plato
 Dubliners by James Joyce
 An Occurrence at Owl Creek Bridge by Ambrose Bierce
-The Wonder Book of Knowledge
 Tractatus Logico-Philosophicus by Ludwig Wittgenstein
 Emma by Jane Austen
 War and Peace by graf Leo Tolstoy
