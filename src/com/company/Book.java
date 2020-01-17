@@ -16,12 +16,7 @@ public class Book implements Serializable {
 
     @Override
     public String toString() {
-        return "Book{" +
-                "title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", available=" + available +
-                ", currentReader=" + currentReader +
-                '}';
+        return "Author: " + author + ", " + "Title: " + title;
     }
 
     public User getCurrentReader(){
