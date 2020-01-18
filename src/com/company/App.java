@@ -58,22 +58,12 @@ public class App {
         }while (true);
     }
 
-    public void loggedInAsLibrarian(User user){
-        do {
-            System.out.println("Välj ett alternativ (0-?):\n");
-            System.out.println("1) Se tillgängliga böcker");
-            System.out.println("2) ");
-            System.out.println("Välkommen till BiblioteksAppen!");
-            System.out.println("Välkommen till BiblioteksAppen!");
-        } while (true);
-    }
-
     public void loggedInAsCustomer(User user){
         int selection = 99;
 
         do {
             System.out.println("Välj ett alternativ (0-4):\n");
-            System.out.println("1) Se tillgängliga böcker");
+            System.out.println("1) Visa tillgängliga böcker");
             System.out.println("2) Sök på boktitel/författare");
             System.out.println("3) Visa mina lånade böcker");
             System.out.println("4) Lämna tillbaka böcker\n");
@@ -105,6 +95,215 @@ public class App {
                     System.out.println("\nVänligen ange ett giltigt alternativ!\n");
             }
         } while (true);
+    }
+
+    public void loggedInAsLibrarian(User user) {
+        int selection = 99;
+
+        do {
+            System.out.println("Välj ett alternativ (0-5):\n");
+            System.out.println("1) Visa alla böcker samt tillgänglighet");
+            System.out.println("2) Visa alla utlånade böcker");
+            System.out.println("3) Lägg till böcker");
+            System.out.println("4) Ta bort böcker");
+            System.out.println("5) Visa alla användare");
+            System.out.println("6) Sök efter användare\n");
+            System.out.println("0) Logga ut\n");
+
+            try {
+                selection = Integer.parseInt(scanner.nextLine());
+            } catch (Exception e) {
+                System.out.println("\nVänligen ange ett giltigt alternativ!\n");
+            }
+
+            switch (selection) {
+                case 1:
+                    showAllBooksAndStatus();
+                    break;
+                case 2:
+                    showAllBorrowedBooks();
+                    break;
+                case 3:
+                    addBooks();
+                    break;
+                case 4:
+                    removeBooks();
+                    break;
+                case 5:
+                    showAllUsers();
+                    break;
+                case 6:
+                    searchForUser();
+                    break;
+                case 0:
+                    return;
+                default:
+                    System.out.println("\nVänligen ange ett giltigt alternativ!\n");
+            }
+        } while (true);
+    }
+
+    public void showAllBorrowedBooks(){
+
+        ArrayList<Book> borrowedBooks = new ArrayList<>();
+
+        for (Book book : booksInLibrary){
+            if (!book.isAvailable()){
+                borrowedBooks.add(book);
+            }
+        }
+
+        if (borrowedBooks.size() < 1){
+            System.out.println("\nIngen har lånat några böcker!\n");
+            return;
+        }
+
+        for (int i = 0; i < borrowedBooks.size(); i++){
+            System.out.println((i + 1) + ". " + borrowedBooks.get(i) + ", Utlånad till: " + borrowedBooks.get(i).getCurrentReader().getName());
+        }
+    }
+
+    public void addBooks(){
+        System.out.println("Ange författarens namn: ");
+        String author = scanner.nextLine();
+        System.out.println("Ange boktiteln: ");
+        String title = scanner.nextLine();
+
+        booksInLibrary.add(new Book(title, author));
+
+        FileUtils.saveObject("bookList.ser", booksInLibrary);
+
+        System.out.println("Du har lagt till " + title + " av " + author + " i biblioteket!");
+    }
+
+    public void removeBooks(){
+        showAllBooksAndStatus();
+
+        System.out.println("Ange '0' för att återgå till huvudmenyn");
+        System.out.println("Ange siffran till vänster om en bok för att ta bort den ur biblioteket!");
+
+        int selection = 99;
+
+        do{
+            try{
+                selection = Integer.parseInt(scanner.nextLine());
+                if (selection < 0 || selection > booksInLibrary.size() + 1){
+                    throw new IndexOutOfBoundsException();
+                }
+                break;
+            }catch(Exception e){
+                System.out.println("\nVänligen ange ett giltigt alternativ!\n");
+            }
+        }while (true);
+
+        if (selection == 0) return;
+        booksInLibrary.remove(booksInLibrary.get(selection - 1));
+        System.out.println("Du tog bort " + booksInLibrary.get(selection-1).getTitle() + " av " + booksInLibrary.get(selection-1).getAuthor() + " ur biblioteket!");
+
+        FileUtils.saveObject("bookList.ser", booksInLibrary);
+    }
+
+    public void showAllUsers() {
+
+        int selection;
+
+        do {
+            for (int i = 0; i < customers.size(); i++) {
+                System.out.println((i + 1) + ". " + customers.get(i).getName());
+            }
+
+            System.out.println("\nAnge '0' för att återgå till huvudmenyn");
+            System.out.print("Ange siffran till vänster om en användare för att se deras lånade böcker: ");
+            do {
+                try {
+                    selection = Integer.parseInt(scanner.nextLine());
+                    if (selection < 0 || selection > customers.size() + 1) {
+                        throw new IndexOutOfBoundsException();
+                    }
+                    break;
+                } catch (Exception e) {
+                    System.out.println("\nVänligen ange ett giltigt alternativ!\n");
+                }
+            } while (true);
+
+            if (selection == 0) return;
+
+            for (int i = 0; i < customers.size(); i++) {
+                if (selection == (i + 1)) {
+                    if (customers.get(i).getBorrowedBooks().size() < 1) {
+                        System.out.println("Användaren har inte lånat några böcker!");
+                        break;
+                    }
+                    System.out.println(customers.get(i).getBorrowedBooks());
+                }
+            }
+
+        } while (true);
+    }
+
+    public void searchForUser() {
+        System.out.println("Ange '0' för att återgå till huvudmenyn");
+        System.out.print("Ange ett användarnamn att söka efter: ");
+
+        String search = scanner.nextLine();
+
+        if (search.equals("0")) return;
+
+        ArrayList<Customer> searchResult = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            if (customer.getName().contains(search)) {
+                searchResult.add(customer);
+            }
+        }
+
+        int selection;
+
+        do {
+            for (int i = 0; i < searchResult.size(); i++) {
+                System.out.println((i + 1) + ". " + searchResult.get(i).getName());
+            }
+
+            System.out.println("\nAnge '0' för att återgå till huvudmenyn");
+            System.out.print("Ange siffran till vänster om en användare för att se deras lånade böcker: ");
+            do {
+                try {
+                    selection = Integer.parseInt(scanner.nextLine());
+                    if (selection < 0 || selection > searchResult.size() + 1) {
+                        throw new IndexOutOfBoundsException();
+                    }
+                    break;
+                } catch (Exception e) {
+                    System.out.println("\nVänligen ange ett giltigt alternativ!\n");
+                }
+            } while (true);
+
+            if (selection == 0) return;
+
+            for (int i = 0; i < searchResult.size(); i++) {
+                if (selection == (i + 1)) {
+                    if (searchResult.get(i).getBorrowedBooks().size() < 1) {
+                        System.out.println("Användaren har inte lånat några böcker!");
+                        break;
+                    }
+                    System.out.println(searchResult.get(i).getBorrowedBooks());
+                }
+            }
+
+        } while (true);
+    }
+
+    public void showAllBooksAndStatus(){
+
+        Collections.sort(booksInLibrary, Book::compareTo);
+
+        for (int i = 0; i < booksInLibrary.size(); i++){
+            if (booksInLibrary.get(i).isAvailable()) {
+                System.out.println((i + 1) + ". " + booksInLibrary.get(i) + ", " + "Tillgänglig");
+            } else {
+                System.out.println((i + 1) + ". " + booksInLibrary.get(i) + ", " + "Utlånad till: " + booksInLibrary.get(i).getCurrentReader().getName());
+            }
+        }
     }
 
     public void showBorrowedBooks(User user){
@@ -244,6 +443,7 @@ public class App {
                             user.setBorrowedBooks(book);
                             book.setCurrentReader(user);
                             book.setAvailable(false);
+                            System.out.println("Du lånade " + book.getTitle() + " av " + book.getAuthor() + "!\n");
                         }
                     }
                 }
@@ -261,6 +461,8 @@ public class App {
                 availableBooks.add(book);
             }
         }
+
+        Collections.sort(availableBooks, Book::compareTo);
 
         for (int i = 0; i < availableBooks.size(); i++) {
             System.out.println((i + 1) + ". " + availableBooks.get(i));
@@ -292,6 +494,7 @@ public class App {
                         user.setBorrowedBooks(book);
                         book.setCurrentReader(user);
                         book.setAvailable(false);
+                        System.out.println("Du lånade " + book.getTitle() + " av " + book.getAuthor() + "!\n");
                     }
                 }
             }

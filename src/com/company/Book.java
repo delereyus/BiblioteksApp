@@ -16,7 +16,7 @@ public class Book implements Serializable, Comparable< Book >{
 
     @Override
     public String toString() {
-        return "Author: " + author + ", " + "Title: " + title;
+        return "Författare: " + author + ", " + "Boktitel: " + title;
     }
 
     public User getCurrentReader(){
@@ -45,6 +45,8 @@ public class Book implements Serializable, Comparable< Book >{
 
     @Override
     public int compareTo(Book o) {
-        return this.getAuthor().compareTo(o.getAuthor());
+        if (this.getAuthor().compareTo(o.getAuthor()) == 0){
+            return this.getTitle().compareTo(o.getTitle());
+        } else return this.getAuthor().compareTo(o.getAuthor());
     }
 }
