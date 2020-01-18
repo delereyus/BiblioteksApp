@@ -2,7 +2,7 @@ package com.company;
 
 import java.io.Serializable;
 
-public class Book implements Serializable {
+public class Book implements Serializable, Comparable< Book >{
 
     private String title;
     private String author;
@@ -41,5 +41,10 @@ public class Book implements Serializable {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    @Override
+    public int compareTo(Book o) {
+        return this.getAuthor().compareTo(o.getAuthor());
     }
 }
