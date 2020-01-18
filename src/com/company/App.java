@@ -19,12 +19,12 @@ public class App {
         User currentUser = null;
 
         do {
-            System.out.println("Välkommen till BiblioteksAppen!\n");
+            System.out.println("\nVälkommen till BiblioteksAppen!\n");
             System.out.println("Logga in eller skapa ett konto för att gå vidare.\n");
             System.out.println("Ange ett alternativ (0-2):");
             System.out.println("1) Logga in");
             System.out.println("2) Skapa konto\n");
-            System.out.println("0) Avsluta appen\n");
+            System.out.println("0) Avsluta appen");
 
             int selection = 99;
 
@@ -62,12 +62,12 @@ public class App {
         int selection = 99;
 
         do {
-            System.out.println("Välj ett alternativ (0-4):\n");
+            System.out.println("\nVälj ett alternativ (0-4):\n");
             System.out.println("1) Visa tillgängliga böcker");
             System.out.println("2) Sök på boktitel/författare");
             System.out.println("3) Visa mina lånade böcker");
             System.out.println("4) Lämna tillbaka böcker\n");
-            System.out.println("0) Logga ut\n");
+            System.out.println("0) Logga ut");
 
             try {
                 selection = Integer.parseInt(scanner.nextLine());
@@ -101,14 +101,14 @@ public class App {
         int selection = 99;
 
         do {
-            System.out.println("Välj ett alternativ (0-5):\n");
+            System.out.println("\nVälj ett alternativ (0-6):\n");
             System.out.println("1) Visa alla böcker samt tillgänglighet");
             System.out.println("2) Visa alla utlånade böcker");
             System.out.println("3) Lägg till böcker");
             System.out.println("4) Ta bort böcker");
             System.out.println("5) Visa alla användare");
             System.out.println("6) Sök efter användare\n");
-            System.out.println("0) Logga ut\n");
+            System.out.println("0) Logga ut");
 
             try {
                 selection = Integer.parseInt(scanner.nextLine());
@@ -164,7 +164,7 @@ public class App {
     }
 
     public void addBooks(){
-        System.out.println("Ange författarens namn: ");
+        System.out.println("\nAnge författarens namn: ");
         String author = scanner.nextLine();
         System.out.println("Ange boktiteln: ");
         String title = scanner.nextLine();
@@ -173,13 +173,13 @@ public class App {
 
         FileUtils.saveObject("bookList.ser", booksInLibrary);
 
-        System.out.println("Du har lagt till " + title + " av " + author + " i biblioteket!");
+        System.out.println("\nDu har lagt till " + title + " av " + author + " i biblioteket!");
     }
 
     public void removeBooks(){
         showAllBooksAndStatus();
 
-        System.out.println("Ange '0' för att återgå till huvudmenyn");
+        System.out.println("\nAnge '0' för att återgå till huvudmenyn");
         System.out.println("Ange siffran till vänster om en bok för att ta bort den ur biblioteket!");
 
         int selection = 99;
@@ -197,8 +197,18 @@ public class App {
         }while (true);
 
         if (selection == 0) return;
+
+        for (Customer customer : customers){
+            for (Book book : customer.getBorrowedBooks()){
+                if (book.getTitle().equals(booksInLibrary.get(selection-1).getTitle())){
+                    customer.returnBook(book);
+                    break;
+                }
+            }
+        }
+
+        System.out.println("\nDu tog bort " + booksInLibrary.get(selection-1).getTitle() + " av " + booksInLibrary.get(selection-1).getAuthor() + " ur biblioteket!");
         booksInLibrary.remove(booksInLibrary.get(selection - 1));
-        System.out.println("Du tog bort " + booksInLibrary.get(selection-1).getTitle() + " av " + booksInLibrary.get(selection-1).getAuthor() + " ur biblioteket!");
 
         FileUtils.saveObject("bookList.ser", booksInLibrary);
     }
@@ -231,10 +241,14 @@ public class App {
             for (int i = 0; i < customers.size(); i++) {
                 if (selection == (i + 1)) {
                     if (customers.get(i).getBorrowedBooks().size() < 1) {
-                        System.out.println("Användaren har inte lånat några böcker!");
+                        System.out.println("\nAnvändaren har inte lånat några böcker!\n");
                         break;
                     }
-                    System.out.println(customers.get(i).getBorrowedBooks());
+                    System.out.println();
+                    for (Book book : customers.get(i).getBorrowedBooks()){
+                        System.out.println(book);
+                    }
+                    System.out.println();
                 }
             }
 
@@ -242,7 +256,7 @@ public class App {
     }
 
     public void searchForUser() {
-        System.out.println("Ange '0' för att återgå till huvudmenyn");
+        System.out.println("\nAnge '0' för att återgå till huvudmenyn");
         System.out.print("Ange ett användarnamn att söka efter: ");
 
         String search = scanner.nextLine();
@@ -252,7 +266,7 @@ public class App {
         ArrayList<Customer> searchResult = new ArrayList<>();
 
         for (Customer customer : customers) {
-            if (customer.getName().contains(search)) {
+            if (customer.getName().toLowerCase().contains(search.toLowerCase())) {
                 searchResult.add(customer);
             }
         }
@@ -283,10 +297,14 @@ public class App {
             for (int i = 0; i < searchResult.size(); i++) {
                 if (selection == (i + 1)) {
                     if (searchResult.get(i).getBorrowedBooks().size() < 1) {
-                        System.out.println("Användaren har inte lånat några böcker!");
+                        System.out.println("\nAnvändaren har inte lånat några böcker!\n");
                         break;
                     }
-                    System.out.println(searchResult.get(i).getBorrowedBooks());
+                    System.out.println();
+                    for (Book book : searchResult.get(i).getBorrowedBooks()){
+                        System.out.println(book);
+                    }
+                    System.out.println();
                 }
             }
 
@@ -315,14 +333,14 @@ public class App {
                 System.out.println(book);
             }
         } else {
-            System.out.println("\nDu har inte lånat några böcker!\n");
+            System.out.println("\nDu har inte lånat några böcker!");
             return;
         }
 
-        System.out.println("Välj ett alternativ (0-1)\n");
+        System.out.println("\nVälj ett alternativ (0-1)\n");
 
         System.out.println("1) Lämna tillbaka böcker\n");
-        System.out.println("0) Återgå till huvudmenyn\n");
+        System.out.println("0) Återgå till huvudmenyn");
 
         do{
             try{
@@ -355,7 +373,7 @@ public class App {
                 System.out.print("Ange siffran till vänster om den bok du vill lämna tillbaka: ");
 
             } else {
-                System.out.println("\nDu har inte lånat några böcker!\n");
+                System.out.println("\nDu har inte lånat några böcker!");
                 break;
             }
 
@@ -396,14 +414,14 @@ public class App {
         int selection;
 
         do {
-            System.out.println("Ange '0' för att återgå till huvudmenyn");
+            System.out.println("\nAnge '0' för att återgå till huvudmenyn");
             System.out.print("Sök efter en boktitel/författare: ");
 
             do {
                 search = scanner.nextLine();
                 if (search.equals("0")) return;
                 for (Book book : booksInLibrary) {
-                    if (book.getAuthor().contains(search) || book.getTitle().contains(search)) {
+                    if (book.getAuthor().toLowerCase().contains(search.toLowerCase()) || book.getTitle().toLowerCase().contains(search.toLowerCase())) {
                         if (book.isAvailable()) {
                             searchResults.add(book);
                         }
@@ -419,7 +437,7 @@ public class App {
             for (int i = 0; i < searchResults.size(); i++) {
                 System.out.println((i + 1) + ". " + searchResults.get(i));
             }
-            System.out.println("Ange '0' för att återgå till huvudmenyn");
+            System.out.println("\nAnge '0' för att återgå till huvudmenyn");
             System.out.print("\nFör att låna en bok, ange siffran till vänster om boken: ");
 
             do {
@@ -443,7 +461,7 @@ public class App {
                             user.setBorrowedBooks(book);
                             book.setCurrentReader(user);
                             book.setAvailable(false);
-                            System.out.println("Du lånade " + book.getTitle() + " av " + book.getAuthor() + "!\n");
+                            System.out.println("\nDu lånade " + book.getTitle() + " av " + book.getAuthor() + "!");
                         }
                     }
                 }
@@ -470,7 +488,7 @@ public class App {
 
         int selection;
 
-        System.out.println("Ange '0' för att återgå till huvudmenyn");
+        System.out.println("\nAnge '0' för att återgå till huvudmenyn");
         System.out.print("\nFör att låna en bok, ange siffran till vänster om boken: ");
 
         do {
@@ -494,7 +512,7 @@ public class App {
                         user.setBorrowedBooks(book);
                         book.setCurrentReader(user);
                         book.setAvailable(false);
-                        System.out.println("Du lånade " + book.getTitle() + " av " + book.getAuthor() + "!\n");
+                        System.out.println("\nDu lånade " + book.getTitle() + " av " + book.getAuthor() + "!");
                     }
                 }
             }
@@ -510,7 +528,7 @@ public class App {
         boolean keepLooping = true;
 
         do {
-            System.out.print("Ange användarnamn:");
+            System.out.print("\nAnge användarnamn:");
             userName = scanner.nextLine();
             for (Customer customer : customers) {
                 if (customer.getName().equals(userName)) {
@@ -530,7 +548,7 @@ public class App {
 
             if (keepLooping) {
                 System.out.println("\nAnvändaren finns inte i systemet!");
-                System.out.println("Vänligen se över dina uppgifter eller skapa ett konto för att logga in.\n");
+                System.out.println("Vänligen se över dina uppgifter eller skapa ett konto för att logga in.");
             }
         } while (keepLooping);
 
@@ -538,10 +556,10 @@ public class App {
             System.out.print("Ange lösenord:");
             password = scanner.nextLine();
             if (currentUser.getPassword().equals(password)) {
-                System.out.println("\nDu är nu inloggad!\n");
+                System.out.println("\nDu är nu inloggad!");
                 break;
             }
-            System.out.println("\nDu har angivit fel lösenord!");
+            System.out.println("\nDu har angivit fel lösenord!\n");
         } while (true);
 
         return currentUser;
@@ -555,12 +573,12 @@ public class App {
         Customer newUser = null;
 
         do {
-            System.out.print("Välj ditt användarnamn: ");
+            System.out.print("\nVälj ditt användarnamn: ");
             userName = scanner.nextLine();
             if(customers.size() > 0) {
                 for (Customer customer : customers) {
                     if (customer.getName().equals(userName)) {
-                        System.out.println("Användarnamnet är inte tillgängligt!");
+                        System.out.println("Användarnamnet är inte tillgängligt!\n");
                         keepLooping = true;
                         break;
                     } else keepLooping = false;
@@ -568,13 +586,13 @@ public class App {
             } else keepLooping = false;
         } while (keepLooping);
 
-        System.out.print("Välj ditt lösenord (minst 4 tecken): ");
+        System.out.print("\nVälj ditt lösenord (minst 4 tecken): ");
         do {
             password = scanner.nextLine();
             if (password.length() > 4){
                 break;
             } else {
-                System.out.println("Ditt lösenord måste vara minst 4 tecken långt!");
+                System.out.println("Ditt lösenord måste vara minst 4 tecken långt!\n");
             }
         } while (true);
 
@@ -583,7 +601,7 @@ public class App {
             if (password.equals(scanner.nextLine())) {
                 break;
             } else {
-                System.out.println("Du måste upprepa lösenordet du angav i förra steget!");
+                System.out.println("Du måste upprepa lösenordet du angav i förra steget!\n");
             }
         } while (true);
 
